@@ -587,9 +587,13 @@ function submitOrder(){
   cart=[];document.getElementById('tableInp').value='';
   renderCart();
   toast('⏳ 送出中...');
-  fetch(API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'addOrder',order})})
-    .then(()=>{toast('✅ 訂單送出！'+(orderType==='dine'?'桌':'外帶')+tbl);setTimeout(syncOrders,1000);})
-    .catch(()=>toast('❌ 送出失敗，請重試'));
+  const cb='cb'+Date.now();
+  window[cb]=function(res){ delete window[cb]; document.getElementById('addScript')?.remove(); toast('✅ 訂單送出！'+(orderType==='dine'?'桌':'外帶')+tbl); setTimeout(syncOrders,1500); };
+  const s=document.createElement('script');
+  s.id='addScript';
+  s.src=API+'?action=addOrder&callback='+cb+'&order='+encodeURIComponent(JSON.stringify(order));
+  s.onerror=()=>{ delete window[cb]; s.remove(); toast('❌ 送出失敗，請重試'); };
+  document.head.appendChild(s);
 }
 function isReady(o){return !o.counterDone&&(!o.needsGrill||o.grillDone)&&(!o.needsBread||o.breadDone);}
 function renderReadyOrders(){
