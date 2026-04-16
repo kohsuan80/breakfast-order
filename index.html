@@ -576,7 +576,7 @@ function delItem(id){cart=cart.filter(c=>c.id!==id);renderCart();}
 function updNote(id,v){const item=cart.find(c=>c.id===id);if(item)item.note=v;}
 function submitOrder(){
   const tbl=document.getElementById('tableInp').value.trim();
-  if(!tbl){document.getElementById('tableInp').style.borderColor='red';setTimeout(()=>document.getElementById('tableInp').style.borderColor='',1500);toast('請輸入'+(orderType==='dine'?'桌號':'外帶號'));return;}
+  if(!tbl && orderType==='dine'){document.getElementById('tableInp').style.borderColor='red';setTimeout(()=>document.getElementById('tableInp').style.borderColor='',1500);toast('請輸入桌號');return;}
   const order={id:orderSeq++,type:orderType,table:orderType==='take'?'外帶':tbl,items:JSON.parse(JSON.stringify(cart)),
     time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
     grillDone:false,breadDone:false,counterDone:false,
