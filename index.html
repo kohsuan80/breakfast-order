@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>呷尚寶 新莊新泰店</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Black+Han+Sans&display=swap');
+:root{--orange:#F4511E;--orange-dark:#BF360C;--orange-light:#FFF3E0;--yellow:#FFB300;--green:#2E7D32;--green-light:#E8F5E9;--blue:#1565C0;--blue-light:#E3F2FD;--red:#C62828;--purple:#6A1B9A;--purple-light:#F3E5F5;--border:#E0E0E0;--text:#212121;--muted:#9E9E9E;--surface:#FFFFFF;--bg:#FAFAFA;--grill-bg:#1C1008;--grill-card:#2C1A08;--grill-accent:#FF8C00;--bread-bg:#0A1628;--bread-card:#0F2040;--bread-accent:#4FC3F7;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.topnav{background:var(--orange);padding:0 12px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(244,81,30,0.5);}
+.topnav-logo{font-family:'Black Han Sans',sans-serif;font-size:17px;color:white;letter-spacing:1px;}
+.tab-group{display:flex;background:rgba(0,0,0,0.2);border-radius:8px;padding:3px;gap:2px;}
+.tab{padding:5px 10px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,0.7);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.tab.active{background:white;color:var(--orange);}
+.page{display:none;min-height:calc(100vh - 52px);}
+.page.active{display:block;}
+#counterPage{background:var(--bg);}
+.counter-layout{display:flex;height:calc(100vh - 52px);overflow:hidden;}
+.menu-side{width:56%;border-right:2px solid var(--border);display:flex;flex-direction:column;background:white;}
+.cat-scroll{display:flex;gap:5px;padding:8px 10px;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none;flex-shrink:0;}
+.cat-scroll::-webkit-scrollbar{display:none;}
+.cat-pill{padding:4px 11px;border-radius:20px;border:2px solid var(--border);background:white;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.15s;}
+.cat-pill.active{background:var(--orange);color:white;border-color:var(--orange);}
+.menu-grid{display:flex;flex-wrap:wrap;gap:5px;padding:8px;overflow-y:auto;flex:1;align-content:flex-start;}
+.menu-card{background:white;border:2px solid var(--border);border-radius:6px;padding:4px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;}
+.menu-card:active{transform:scale(0.96);background:var(--orange-light);border-color:var(--orange);}
+.menu-card-name{font-size:12px;font-weight:700;margin-bottom:1px;line-height:1.2;white-space:nowrap;}
+.menu-card-price{font-size:11px;color:var(--orange);font-weight:700;white-space:nowrap;}
+.menu-card-tag{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;margin-top:2px;}
+.tag-both{background:#FFF3E0;color:#E65100;}
+.cart-side{width:44%;display:flex;flex-direction:column;background:white;}
+.cart-top{padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cart-top-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.cart-title{font-size:14px;font-weight:900;}
+.type-toggle{display:flex;gap:4px;}
+.type-btn{padding:4px 9px;border-radius:6px;border:2px solid var(--border);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;}
+.type-btn.dine-active{background:var(--blue-light);color:var(--blue);border-color:var(--blue);}
+.type-btn.take-active{background:var(--purple-light);color:var(--purple);border-color:var(--purple);}
+.table-row{display:flex;align-items:center;gap:6px;}
+.table-lbl{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.table-inp{flex:1;padding:5px 8px;border:2px solid var(--border);border-radius:6px;font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:700;outline:none;}
+.table-inp:focus{border-color:var(--orange);}
+.cart-list{flex:1;overflow-y:auto;padding:6px;}
+.cart-empty{text-align:center;color:var(--muted);margin-top:40px;font-size:13px;}
+.cart-row{background:#F5F5F5;border-radius:8px;padding:7px 9px;margin-bottom:5px;}
+.cart-row-top{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.cart-row-name{flex:1;font-size:12px;font-weight:700;line-height:1.3;}
+.qty-ctrl{display:flex;align-items:center;gap:3px;}
+.qbtn{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:white;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);}
+.qnum{font-size:13px;font-weight:900;min-width:16px;text-align:center;}
+.cart-row-price{font-size:12px;font-weight:700;color:var(--orange);white-space:nowrap;}
+.delbtn{width:22px;height:22px;border-radius:50%;border:none;background:#FFEBEE;color:var(--red);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.note-inp{width:100%;padding:4px 7px;border:1.5px solid var(--border);border-radius:5px;font-family:'Noto Sans TC',sans-serif;font-size:12px;outline:none;background:white;}
+.cart-bottom{padding:8px 12px;border-top:2px solid var(--border);flex-shrink:0;}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.total-lbl{font-size:14px;font-weight:700;}
+.total-amt{font-size:22px;font-weight:900;color:var(--orange);}
+.send-btn{width:100%;padding:12px;background:var(--orange);color:white;border:none;border-radius:10px;font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;}
+.send-btn:disabled{background:var(--border);color:var(--muted);}
+.ready-section{padding:8px 12px;border-top:3px solid var(--green);background:var(--green-light);flex-shrink:0;}
+.ready-title{font-size:12px;font-weight:900;color:var(--green);margin-bottom:5px;}
+.ready-list{display:flex;flex-wrap:wrap;gap:5px;}
+.ready-chip{padding:6px 14px;background:var(--green);color:white;border-radius:20px;font-size:14px;font-weight:900;cursor:pointer;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,0.4);}50%{box-shadow:0 0 0 8px rgba(46,125,50,0);}}
+#grillPage{background:var(--grill-bg);min-height:calc(100vh - 52px);padding:12px;}
+#breadPage{background:var(--bread-bg);min-height:calc(100vh - 52px);padding:12px;}
+.station-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.station-title{font-family:'Black Han Sans',sans-serif;font-size:26px;letter-spacing:3px;}
+.pending-badge{padding:5px 14px;border-radius:20px;font-size:14px;font-weight:900;color:white;}
+.grill-badge{background:var(--orange);}
+.bread-badge{background:var(--blue);}
+.queue-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+.queue-chip{padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;opacity:0.6;}
+.grill-chip{background:#4A2E10;color:var(--grill-accent);}
+.bread-chip{background:#1A3A60;color:var(--bread-accent);}
+.big-order-card{border-radius:14px;overflow:hidden;animation:slideDown 0.3s ease;margin-bottom:10px;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+.grill-card{background:var(--grill-card);border:2px solid #4A2E10;}
+.bread-card{background:var(--bread-card);border:2px solid #1A3A60;}
+.boc-header{padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.grill-card .boc-header{background:#3A2010;}
+.bread-card .boc-header{background:#0A1E40;}
+.boc-num{font-family:'Black Han Sans',sans-serif;font-size:24px;letter-spacing:2px;}
+.grill-card .boc-num{color:var(--grill-accent);}
+.bread-card .boc-num{color:var(--bread-accent);}
+.boc-type{padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:white;}
+.badge-dine{background:var(--blue);}
+.badge-take{background:var(--purple);}
+.boc-time{font-size:11px;color:var(--muted);margin-left:auto;}
+.boc-items{padding:8px 14px;}
+.boc-item-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.boc-item-row:last-child{border-bottom:none;}
+.boc-qty{font-size:20px;font-weight:900;min-width:30px;}
+.grill-card .boc-qty{color:var(--grill-accent);}
+.bread-card .boc-qty{color:var(--bread-accent);}
+.boc-name{flex:1;font-size:17px;font-weight:700;color:#FFF8F0;}
+.boc-note{display:block;font-size:12px;color:var(--yellow);margin-top:2px;}
+.boc-footer{padding:10px 14px;}
+.done-btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:'Noto Sans TC',sans-serif;font-size:17px;font-weight:900;cursor:pointer;letter-spacing:1px;}
+.grill-done{background:var(--grill-accent);color:#1C1008;}
+.bread-done{background:var(--bread-accent);color:#0A1628;}
+.no-orders{text-align:center;padding:60px 20px;opacity:0.4;}
+.no-orders-icon{font-size:48px;margin-bottom:10px;}
+.no-orders-text{font-size:16px;font-weight:700;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:white;border-radius:14px;padding:18px;width:92%;max-width:380px;animation:popIn 0.2s ease;max-height:85vh;overflow-y:auto;}
+@keyframes popIn{from{transform:scale(0.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-title{font-size:17px;font-weight:900;color:var(--orange);margin-bottom:3px;}
+.modal-subtitle{font-size:14px;font-weight:700;margin-bottom:10px;}
+.qnotes{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.qnote{padding:4px 10px;border-radius:14px;border:1.5px solid var(--border);background:white;font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;}
+.qnote.sel{background:var(--yellow);border-color:var(--yellow);color:white;font-weight:700;}
+.custom-note{width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:13px;outline:none;margin-bottom:12px;}
+.modal-actions{display:flex;gap:8px;}
+.m-cancel{flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;background:white;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.m-confirm{flex:2;padding:10px;border:none;border-radius:8px;background:var(--orange);color:white;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:900;cursor:pointer;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#212121;color:white;padding:10px 20px;border-radius:22px;font-size:13px;font-weight:700;z-index:999;transition:transform 0.3s ease;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-logo">🍳 呷尚寶 新莊新泰</div>
+  <div class="tab-group">
+    <button class="tab active" onclick="switchTab('counter',this)">🏪 櫃檯</button>
+    <button class="tab" onclick="switchTab('grill',this)">🍳 煎台</button>
+    <button class="tab" onclick="switchTab('bread',this)">🍞 麵包/飲料</button>
+  </div>
+</nav>
+<div id="counterPage" class="page active">
+  <div class="counter-layout">
+    <div class="menu-side">
+      <div class="cat-scroll" id="catScroll"></div>
+      <div class="menu-grid" id="menuGrid"></div>
+    </div>
+    <div class="cart-side">
+      <div class="ready-section" id="readySection" style="display:none">
+        <div class="ready-title">🔔 可以取餐了！點擊確認完成</div>
+        <div class="ready-list" id="readyList"></div>
+      </div>
+      <div class="cart-top">
+        <div class="cart-top-row1">
+          <span class="cart-title">點單</span>
+          <div class="type-toggle">
+            <button class="type-btn dine-active" id="btnDine" onclick="setType('dine')">內用</button>
+            <button class="type-btn" id="btnTake" onclick="setType('take')">外帶</button>
+          </div>
+        </div>
+        <div class="table-row">
+          <span class="table-lbl" id="tableLbl">桌號：</span>
+          <input class="table-inp" id="tableInp" placeholder="輸入桌號" maxlength="8">
+        </div>
+      </div>
+      <div class="cart-list" id="cartList"><div class="cart-empty">← 點左側餐點加入</div></div>
+      <div class="cart-bottom">
+        <div class="total-row"><span class="total-lbl">合計</span><span class="total-amt" id="totalAmt">$0</span></div>
+        <button class="send-btn" id="sendBtn" onclick="submitOrder()" disabled>送出訂單</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="grillPage" class="page">
+  <div class="station-header">
+    <div class="station-title" style="color:var(--grill-accent)">🍳 煎台</div>
+    <div class="pending-badge grill-badge" id="grillBadge">0 筆</div>
+  </div>
+  <div class="queue-row" id="grillQueue"></div>
+  <div id="grillOrders"></div>
+</div>
+<div id="breadPage" class="page">
+  <div class="station-header">
+    <div class="station-title" style="color:var(--bread-accent)">🍞 麵包/飲料</div>
+    <div class="pending-badge bread-badge" id="breadBadge">0 筆</div>
+  </div>
+  <div class="queue-row" id="breadQueue"></div>
+  <div id="breadOrders"></div>
+</div>
+<div class="overlay" id="noteOverlay">
+  <div class="modal">
+    <div class="modal-title">加入點單</div>
+    <div class="modal-subtitle" id="mItemName"></div>
+    <div class="qnotes" id="qnotes"></div>
+    <input class="custom-note" id="customNote" placeholder="自訂備註（可留空）" maxlength="40">
+    <div class="modal-actions">
+      <button class="m-cancel" onclick="closeModal()">取消</button>
+      <button class="m-confirm" onclick="confirmAdd()">加入 ＋</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const menu={
+  "經典組合餐":[
+    {name:"1號餐",price:80,station:"both"},{name:"2號餐",price:95,station:"both"},
+    {name:"3號餐",price:90,station:"both"},{name:"4號餐",price:95,station:"both"},
+    {name:"5號餐",price:105,station:"both"},{name:"6號餐",price:125,station:"both"},
+    {name:"7號餐",price:85,station:"both"},{name:"8號餐",price:105,station:"both"},
+    {name:"特餐(火腿吐司)",price:50,station:"both"},
+  ],
+  "蛋餅":[
+    {name:"原味蛋餅",price:25,station:"grill"},{name:"玉米蛋餅",price:35,station:"grill"},
+    {name:"肉鬆蛋餅",price:40,station:"grill"},{name:"火腿蛋餅",price:40,station:"grill"},
+    {name:"起士蛋餅",price:35,station:"grill"},{name:"培根蛋餅",price:45,station:"grill"},
+    {name:"燻雞蛋餅",price:50,station:"grill"},{name:"鮪魚蛋餅",price:45,station:"grill"},
+    {name:"豬排蛋餅",price:50,station:"grill"},{name:"薯餅蛋餅",price:45,station:"grill"},
+    {name:"熱狗蛋餅",price:40,station:"grill"},{name:"蔬菜蛋餅",price:45,station:"grill"},
+    {name:"炸檸檬雞柳蛋餅",price:65,station:"grill"},
+  ],
+  "烤吐司":[
+    {name:"煎蛋烤吐司",price:30,station:"both"},{name:"火腿烤吐司",price:35,station:"both"},
+    {name:"肉鬆烤吐司",price:35,station:"bread"},{name:"豬肉烤吐司",price:35,station:"both"},
+    {name:"鮪魚烤吐司",price:40,station:"bread"},{name:"培根烤吐司",price:40,station:"both"},
+    {name:"燻雞烤吐司",price:45,station:"both"},{name:"豬排烤吐司",price:45,station:"both"},
+    {name:"起司烤吐司",price:35,station:"bread"},{name:"蔬菜烤吐司",price:35,station:"bread"},
+    {name:"香雞烤吐司",price:40,station:"both"},{name:"薯餅烤吐司",price:50,station:"both"},
+    {name:"塔塔鱈魚烤吐司",price:65,station:"both"},{name:"塔塔蝦排烤吐司",price:75,station:"both"},
+    {name:"炸檸檬雞柳烤吐司",price:50,station:"both"},
+    {name:"原味咔拉雞腿烤吐司",price:65,station:"both"},{name:"辣味咔拉雞腿烤吐司",price:65,station:"both"},
+    {name:"原味香煎雞腿烤吐司",price:65,station:"both"},{name:"辣味香煎雞腿烤吐司",price:65,station:"both"},
+    {name:"豬肉總匯",price:70,station:"both"},{name:"豬排總匯",price:80,station:"both"},
+    {name:"香雞總匯",price:75,station:"both"},{name:"鮪魚總匯",price:75,station:"both"},
+    {name:"原味咔啦雞腿總匯",price:110,station:"both"},{name:"辣味咔啦雞腿總匯",price:110,station:"both"},
+    {name:"原味香煎雞腿總匯",price:110,station:"both"},{name:"辣味香煎雞腿總匯",price:110,station:"both"},
+  ],
+  "漢堡":[
+    {name:"煎蛋漢堡",price:35,station:"both"},{name:"豬肉漢堡",price:40,station:"both"},
+    {name:"火腿漢堡",price:40,station:"both"},{name:"培根漢堡",price:40,station:"both"},
+    {name:"肉鬆漢堡",price:40,station:"bread"},{name:"起司漢堡",price:45,station:"bread"},
+    {name:"香雞漢堡",price:45,station:"both"},{name:"薯餅漢堡",price:45,station:"both"},
+    {name:"蔬菜漢堡",price:45,station:"bread"},{name:"豬排漢堡",price:50,station:"both"},
+    {name:"燻雞漢堡",price:50,station:"both"},{name:"鮪魚漢堡",price:45,station:"both"},
+    {name:"炸檸檬雞柳漢堡",price:55,station:"both"},{name:"塔塔鱈魚漢堡",price:70,station:"both"},
+    {name:"塔塔蝦排漢堡",price:80,station:"both"},
+    {name:"原味咔拉雞腿漢堡",price:70,station:"both"},{name:"辣味咔拉雞腿漢堡",price:70,station:"both"},
+    {name:"原味香煎雞腿漢堡",price:70,station:"both"},{name:"辣味香煎雞腿漢堡",price:70,station:"both"},
+  ],
+  "歐脆堡":[
+    {name:"荷醬蔬菜歐脆堡",price:50,station:"bread"},{name:"荷醬豬肉歐脆堡",price:55,station:"both"},
+    {name:"荷醬火腿歐脆堡",price:55,station:"both"},{name:"荷醬培根歐脆堡",price:55,station:"both"},
+    {name:"塔塔香雞歐脆堡",price:55,station:"both"},{name:"荷醬豬排歐脆堡",price:65,station:"both"},
+    {name:"塔塔鱈魚歐脆堡",price:80,station:"both"},{name:"塔塔蝦排歐脆堡",price:90,station:"both"},
+    {name:"荷醬咔啦歐脆堡",price:100,station:"both"},
+  ],
+  "元氣堡":[
+    {name:"圓可頌元氣堡",price:45,station:"bread"},{name:"荷醬蔬菜元氣堡",price:55,station:"bread"},
+    {name:"荷醬火腿元氣堡",price:60,station:"both"},{name:"荷醬豬肉元氣堡",price:60,station:"both"},
+    {name:"塔塔香雞元氣堡",price:60,station:"both"},{name:"荷醬培根元氣堡",price:60,station:"both"},
+    {name:"荷醬豬排元氣堡",price:70,station:"both"},{name:"塔塔鱈魚元氣堡",price:85,station:"both"},
+    {name:"塔塔蝦排元氣堡",price:95,station:"both"},{name:"荷醬咔啦元氣堡",price:105,station:"both"},
+  ],
+  "陽光堡":[
+    {name:"荷醬蔬菜陽光堡",price:55,station:"bread"},{name:"荷醬培根陽光堡",price:60,station:"both"},
+    {name:"塔塔香雞陽光堡",price:60,station:"both"},{name:"荷醬豬肉陽光堡",price:60,station:"both"},
+    {name:"荷醬火腿陽光堡",price:60,station:"both"},{name:"荷醬豬排陽光堡",price:70,station:"both"},
+    {name:"塔塔鱈魚陽光堡",price:85,station:"both"},{name:"塔塔蝦排陽光堡",price:95,station:"both"},
+    {name:"荷醬咔啦陽光堡",price:105,station:"both"},
+  ],
+  "起士堡":[
+    {name:"帕瑪森起士堡",price:45,station:"bread"},{name:"荷醬蔬菜起士堡",price:50,station:"bread"},
+    {name:"荷醬豬肉起士堡",price:55,station:"both"},{name:"荷醬培根起士堡",price:55,station:"both"},
+    {name:"塔塔香雞起士堡",price:55,station:"both"},{name:"荷醬火腿起士堡",price:55,station:"both"},
+    {name:"荷醬豬排起士堡",price:65,station:"both"},{name:"塔塔鱈魚起士堡",price:80,station:"both"},
+    {name:"塔塔蝦排起司堡",price:90,station:"both"},{name:"荷醬咔啦起士堡",price:100,station:"both"},
+  ],
+  "活力貝果":[
+    {name:"蔬菜貝果",price:55,station:"bread"},{name:"火腿貝果",price:55,station:"both"},
+    {name:"培根貝果",price:55,station:"both"},{name:"燻雞貝果",price:60,station:"both"},
+    {name:"豬肉貝果",price:60,station:"both"},{name:"豬排貝果",price:65,station:"both"},
+  ],
+  "捲餅":[
+    {name:"荷醬蔬菜捲餅",price:45,station:"bread"},{name:"荷醬培根捲餅",price:50,station:"both"},
+    {name:"荷醬火腿捲餅",price:50,station:"both"},{name:"荷醬豬肉捲餅",price:50,station:"both"},
+    {name:"塔塔香雞捲餅",price:50,station:"both"},{name:"荷醬燻雞捲餅",price:55,station:"both"},
+    {name:"荷醬豬排捲餅",price:55,station:"both"},{name:"塔塔鱈魚捲餅",price:75,station:"both"},
+    {name:"塔塔蝦排捲餅",price:85,station:"both"},
+  ],
+  "雜糧軟法":[
+    {name:"荷醬蔬菜雜糧軟法",price:55,station:"bread"},{name:"荷醬豬肉雜糧軟法",price:60,station:"both"},
+    {name:"荷醬火腿雜糧軟法",price:60,station:"both"},{name:"荷醬培根雜糧軟法",price:60,station:"both"},
+    {name:"塔塔香雞雜糧軟法",price:60,station:"both"},{name:"荷醬豬排雜糧軟法",price:70,station:"both"},
+    {name:"塔塔鱈魚雜糧軟法",price:85,station:"both"},{name:"塔塔蝦排雜糧軟法",price:95,station:"both"},
+    {name:"荷醬咔啦雜糧軟法",price:105,station:"both"},
+  ],
+  "乳酪餅":[
+    {name:"起士乳酪餅",price:35,station:"bread"},{name:"花生乳酪餅",price:35,station:"bread"},
+    {name:"奶油乳酪餅",price:35,station:"bread"},{name:"巧克力乳酪餅",price:35,station:"bread"},
+    {name:"椰香奶酥乳酪餅",price:35,station:"bread"},{name:"葡萄奶酥乳酪餅",price:35,station:"bread"},
+    {name:"草莓乳酪餅",price:35,station:"bread"},{name:"香蒜乳酪餅",price:45,station:"bread"},
+    {name:"火腿乳酪餅",price:35,station:"both"},{name:"肉鬆乳酪餅",price:40,station:"bread"},
+    {name:"培根乳酪餅",price:35,station:"both"},{name:"豬肉乳酪餅",price:35,station:"both"},
+    {name:"香雞乳酪餅",price:40,station:"both"},{name:"豬排乳酪餅",price:45,station:"both"},
+    {name:"鮪魚乳酪餅",price:40,station:"both"},{name:"蔬菜乳酪餅",price:35,station:"bread"},
+  ],
+  "鐵板麵":[
+    {name:"黑胡椒鐵板麵",price:55,station:"grill"},{name:"蘑菇鐵板麵",price:55,station:"grill"},
+    {name:"肉醬鐵板麵",price:55,station:"grill"},{name:"宮保雞丁鐵板麵",price:65,station:"grill"},
+    {name:"奶油雞肉鐵板麵",price:65,station:"grill"},
+  ],
+  "中式/單點":[
+    {name:"荷包蛋",price:15,station:"grill"},{name:"玉米蛋",price:30,station:"grill"},
+    {name:"香雞單點",price:30,station:"grill"},{name:"火腿單點",price:25,station:"grill"},
+    {name:"培根單點",price:25,station:"grill"},{name:"豬肉單點",price:25,station:"grill"},
+    {name:"豬排單點",price:35,station:"grill"},{name:"蝦排單點",price:50,station:"grill"},
+    {name:"鱈魚單點",price:45,station:"grill"},{name:"熱狗",price:15,station:"grill"},
+    {name:"薯餅",price:25,station:"grill"},{name:"黃金脆薯",price:35,station:"grill"},
+    {name:"炸元寶",price:35,station:"grill"},{name:"手工抓餅",price:30,station:"grill"},
+    {name:"麥克雞塊",price:45,station:"grill"},{name:"港龍蘿蔔糕",price:45,station:"grill"},
+    {name:"煎餃",price:35,station:"grill"},{name:"檸檬雞柳條",price:40,station:"grill"},
+    {name:"小肉豆",price:35,station:"grill"},
+    {name:"原味煎雞腿",price:60,station:"grill"},{name:"原味咔拉雞腿",price:60,station:"grill"},
+    {name:"辣味煎雞腿",price:60,station:"grill"},{name:"辣味咔拉雞腿",price:60,station:"grill"},
+  ],
+  "飲料":[
+    {name:"綠茶",price:25,station:"bread"},{name:"紅茶",price:25,station:"bread"},
+    {name:"奶茶",price:25,station:"bread"},{name:"奶綠",price:25,station:"bread"},
+    {name:"紅茶拿鐵",price:35,station:"bread"},{name:"紅茶豆漿",price:30,station:"bread"},
+    {name:"豆漿",price:25,station:"bread"},{name:"紐西蘭牛乳",price:40,station:"bread"},
+    {name:"焦糖牛乳",price:50,station:"bread"},{name:"麥芽可可",price:35,station:"bread"},
+  ],
+  "咖啡":[
+    {name:"美式咖啡",price:35,station:"bread"},{name:"特調咖啡",price:40,station:"bread"},
+    {name:"拿鐵咖啡",price:50,station:"bread"},{name:"焦糖拿鐵",price:70,station:"bread"},
+    {name:"檸檬咖啡",price:40,station:"bread"},{name:"摩卡咖啡",price:70,station:"bread"},
+  ],
+  "果汁":[
+    {name:"檸檬紅茶",price:30,station:"bread"},{name:"百香果汁",price:30,station:"bread"},
+    {name:"柳橙綠茶",price:40,station:"bread"},{name:"百香綠茶",price:40,station:"bread"},
+    {name:"百香紅茶",price:40,station:"bread"},{name:"100%柳橙",price:70,station:"bread"},
+    {name:"檸檬汁",price:30,station:"bread"},
+  ],
+  "鍋邊素":[
+    {name:"煎蛋吐司(素)",price:30,station:"both"},{name:"起司吐司(素)",price:35,station:"bread"},
+    {name:"蔬菜吐司(素)",price:35,station:"bread"},{name:"薯餅吐司(素)",price:50,station:"both"},
+    {name:"原味蛋餅(素)",price:25,station:"grill"},{name:"玉米蛋餅(素)",price:35,station:"grill"},
+    {name:"蔬菜蛋餅(素)",price:45,station:"grill"},{name:"起士蛋餅(素)",price:35,station:"grill"},
+    {name:"煎蛋漢堡(素)",price:35,station:"both"},{name:"薯餅漢堡(素)",price:45,station:"both"},
+    {name:"起司漢堡(素)",price:45,station:"bread"},{name:"蔬菜漢堡(素)",price:45,station:"bread"},
+    {name:"荷醬蔬菜歐脆堡(素)",price:50,station:"bread"},{name:"荷醬蔬菜元氣堡(素)",price:55,station:"bread"},
+    {name:"荷醬蔬菜陽光堡(素)",price:55,station:"bread"},{name:"荷醬蔬菜起士堡(素)",price:50,station:"bread"},
+    {name:"荷包蛋(素)",price:15,station:"grill"},{name:"玉米蛋(素)",price:30,station:"grill"},
+  ],
+  "季節限定":[
+    {name:"奶油玉米濃湯",price:25,station:"bread"},
+    {name:"鹽之花可頌",price:40,station:"bread"},
+  ],
+};
+
+const QUICK_NOTES_DRINK=["少糖","無糖","少冰","去冰","加辣","不辣","加蛋","不要蔥","去洋蔥","去生菜","去小黃瓜","去美乃滋","不烤","加胡椒粉"];
+const QUICK_NOTES_FOOD=["加辣","不辣","加蛋","不要蔥","去洋蔥","去生菜","去小黃瓜","去美乃滋","不烤","加胡椒粉"];
+const QUICK_NOTES_EGG_CAKE=["加辣","去醬油","加胡椒粉","加蛋"];
+const EGG_CAKE_CAT="蛋餅";
+const QUICK_NOTES_TOAST_BASE=["加蛋","去美乃滋","不烤","去胡椒粉","加番茄醬","加洋蔥","加小黃瓜"];
+const QUICK_NOTES_TOAST_BACON=["加蛋","去美乃滋","不烤","加番茄醬","加洋蔥","加小黃瓜"];
+const QUICK_NOTES_TOAST_TATA=["加蛋","不烤","加番茄醬","不抹醬","加洋蔥","加小黃瓜"];
+const QUICK_NOTES_TOAST_VEG=["加蛋","去美乃滋","不烤","去胡椒粉","加番茄醬","去洋蔥","去小黃瓜","去生菜","加洋蔥","加小黃瓜"];
+const QUICK_NOTES_TOAST_COMBO=["加蛋","去美乃滋","不烤","去胡椒粉","加番茄醬","加洋蔥","加小黃瓜","不切"];
+const TOAST_CAT="烤吐司";
+const QUICK_NOTES_BURGER_BASE=["加蛋","加洋蔥","加小黃瓜","去洋蔥","去生菜","去美乃滋","不烤","去番茄醬","去胡椒粉"];
+const QUICK_NOTES_BURGER_TATA=["加蛋","加洋蔥","加小黃瓜","去洋蔥","去生菜","不烤","去胡椒粉","不抹醬"];
+const BURGER_CAT="漢堡";
+const DRINK_CATS=["飲料","咖啡","果汁"];
+// 飲料尺寸分類
+const DRINK_SIZE_ALL=["中杯","大杯","特大杯"]; // 一般飲料
+const DRINK_SIZE_COFFEE=["中杯","大杯"];        // 咖啡類
+const DRINK_SIZE_ONE=["中杯"];                  // 麥芽可可、牛奶
+const COFFEE_ITEMS=["美式咖啡","特調咖啡","拿鐵咖啡","焦糖拿鐵","檸檬咖啡","摩卡咖啡"];
+const ONE_SIZE_ITEMS=["麥芽可可","紐西蘭牛乳","焦糖牛乳"];
+
+function getDrinkSizes(drinkName){
+  if(ONE_SIZE_ITEMS.includes(drinkName)) return DRINK_SIZE_ONE;
+  if(COFFEE_ITEMS.includes(drinkName)) return DRINK_SIZE_COFFEE;
+  return DRINK_SIZE_ALL;
+}
+
+// 各飲料的客製化選項
+const DRINK_CUSTOMS = {
+  "綠茶":       ["無糖","去冰"],
+  "奶綠":       ["無糖","去冰"],
+  "豆漿":       ["無糖","去冰","溫","熱"],
+  "特調咖啡":   ["無糖","冰","熱","去奶"],
+  "檸檬咖啡":   ["無糖","冰"],
+  "美式咖啡":   ["冰","熱"],
+  "拿鐵咖啡":   ["冰","熱"],
+  "焦糖拿鐵":   ["冰","熱"],
+  "摩卡咖啡":   ["冰","熱"],
+  "紅茶":       ["去冰","溫","熱"],
+  "奶茶":       ["去冰","溫","熱"],
+  "紅茶拿鐵":   ["去冰","溫","熱"],
+  "麥芽可可":   ["去冰","溫","熱"],
+  "紅茶豆漿":   ["去冰"],
+};
+const DEFAULT_DRINK_CUSTOMS = ["去冰"]; // 所有飲料預設
+
+function getDrinkCustoms(drinkName){
+  return DRINK_CUSTOMS[drinkName] || DEFAULT_DRINK_CUSTOMS;
+}
+
+const ALL_DRINKS=["紅茶","奶茶","綠茶","奶綠","豆漿","紅茶拿鐵","美式咖啡","特調咖啡","拿鐵咖啡","焦糖拿鐵","檸檬咖啡","檸檬汁","百香果汁","焦糖牛乳","百香紅茶","百香綠茶","柳橙綠茶","檸檬紅茶","紐西蘭牛乳","麥芽可可"];
+const SET_DRINKS={"1號餐":ALL_DRINKS,"2號餐":ALL_DRINKS,"3號餐":ALL_DRINKS,"4號餐":ALL_DRINKS,"5號餐":ALL_DRINKS,"6號餐":ALL_DRINKS,"7號餐":["百香綠茶","百香紅茶"],"8號餐":["柳橙綠茶"]};
+const API="https://script.google.com/macros/s/AKfycbxI4X3Jhfpgr4Ncz87NReaYNMJjhmGW6VVizdmW7YmdM9AbK9EAZHbXDh-fiTLI9Ju7/exec";
+let cart=[],orderType='dine',orders=[];
+let orderSeq=parseInt(localStorage.getItem('bfSeq3')||'1');
+let pendingItem=null,selNotes=[],currentCat=null;
+
+function init(){
+  buildCats();selectCat(Object.keys(menu)[0]);
+  renderCart();
+  syncOrders().then(()=>{renderGrill();renderBread();renderReadyOrders();});
+  setInterval(syncOrders,3000);
+}
+function syncOrders(){
+  return new Promise((resolve)=>{
+    const cb='cb'+Date.now();
+    window[cb]=function(fresh){
+      delete window[cb];
+      document.getElementById('jsonpScript')?.remove();
+      if(JSON.stringify(fresh)!==JSON.stringify(orders)){
+        orders=fresh;renderGrill();renderBread();renderReadyOrders();
+      }
+      resolve();
+    };
+    const s=document.createElement('script');
+    s.id='jsonpScript';
+    s.src=API+'?action=getOrders&callback='+cb;
+    s.onerror=()=>{ delete window[cb]; s.remove(); resolve(); };
+    document.head.appendChild(s);
+  });
+}
+function saveOrders(){} // 雲端版不需要本地儲存
+function buildCats(){
+  document.getElementById('catScroll').innerHTML=Object.keys(menu).map(c=>
+    `<button class="cat-pill" id="cp_${c.replace(/[\/\s]/g,'_')}" onclick="selectCat('${c}')">${c}</button>`
+  ).join('');
+}
+function selectCat(cat){
+  currentCat=cat;
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('cp_'+cat.replace(/[\/\s]/g,'_'));
+  if(el)el.classList.add('active');
+  document.getElementById('menuGrid').innerHTML=(menu[cat]||[]).map((item,i)=>
+    `<div class="menu-card" onclick="openModal('${cat.replace(/'/g,"\\'")}',${i})">
+      
+      <div class="menu-card-name">${item.name}</div>
+      <div class="menu-card-price">$${item.price}</div>${item.station==='both'?'<span class="menu-card-tag tag-both">兩邊</span>':''}
+    </div>`
+  ).join('');
+}
+function openModal(cat,idx){
+  pendingItem={...menu[cat][idx],cat,idx};selNotes=[];
+  document.getElementById('mItemName').textContent=pendingItem.name+'　$'+pendingItem.price;
+  document.getElementById('customNote').value='';
+  const isSetMeal=SET_DRINKS[pendingItem.name]!==undefined;
+  let notes;
+  if(DRINK_CATS.includes(pendingItem.cat)){
+    notes=QUICK_NOTES_DRINK;
+  } else if(pendingItem.cat===EGG_CAKE_CAT){
+    notes=QUICK_NOTES_EGG_CAKE;
+  } else if(pendingItem.cat===TOAST_CAT){
+    const n=pendingItem.name;
+    if(n.includes('總匯')) notes=QUICK_NOTES_TOAST_COMBO;
+    else if(n==='蔬菜烤吐司') notes=QUICK_NOTES_TOAST_VEG;
+    else if(n.includes('塔塔')) notes=QUICK_NOTES_TOAST_TATA;
+    else if(n.includes('培根')) notes=QUICK_NOTES_TOAST_BACON;
+    else notes=QUICK_NOTES_TOAST_BASE;
+  } else if(pendingItem.cat===BURGER_CAT){
+    const n=pendingItem.name;
+    if(n.includes('塔塔')) notes=QUICK_NOTES_BURGER_TATA;
+    else notes=QUICK_NOTES_BURGER_BASE;
+  } else {
+    notes=QUICK_NOTES_FOOD;
+  }
+  const drinkOpts=isSetMeal?SET_DRINKS[pendingItem.name]:[];
+  let qhtml='';
+  if(drinkOpts.length){
+    qhtml+='<div style="font-size:11px;font-weight:900;color:var(--orange);width:100%;margin-bottom:4px;">☕ 飲料選擇</div>';
+    qhtml+=drinkOpts.map(n=>`<button class="qnote" style="border-color:var(--orange);color:var(--orange)" onclick="selectDrink(this,'${n}')">${n}</button>`).join('');
+    qhtml+='<div style="font-size:11px;font-weight:900;color:#1565C0;width:100%;margin:6px 0 4px;">📏 飲料大小</div>';
+    qhtml+='<div id="sizeButtons"><span style="font-size:11px;color:var(--muted)">請先選飲料</span></div>';
+    qhtml+='<div style="font-size:11px;font-weight:900;color:#2E7D32;width:100%;margin:6px 0 4px;">⚙️ 飲料客製</div>';
+    qhtml+='<div id="customButtons"><span style="font-size:11px;color:var(--muted)">請先選飲料</span></div>';
+    qhtml+='<div style="font-size:11px;font-weight:900;color:var(--muted);width:100%;margin:6px 0 4px;">備註</div>';
+  }
+  qhtml+=notes.map(n=>`<button class="qnote" onclick="toggleNote(this,'${n}')">${n}</button>`).join('');
+  document.getElementById('qnotes').innerHTML=qhtml;
+  document.getElementById('noteOverlay').classList.add('open');
+}
+function selectDrink(btn,n){
+  document.querySelectorAll('#qnotes button[style*=orange]').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selNotes=selNotes.filter(x=>!x.startsWith('飲料:')&&!x.startsWith('尺寸:'));
+  selNotes.unshift('飲料:'+n);
+  // 更新尺寸按鈕
+  const sizes=getDrinkSizes(n);
+  const sizeEl=document.getElementById('sizeButtons');
+  if(sizeEl){
+    sizeEl.innerHTML=sizes.map(s=>`<button class="qnote" style="border-color:#1565C0;color:#1565C0" onclick="selectSize(this,'${s}')">${s}</button>`).join('');
+    if(sizeEl.firstChild){ sizeEl.firstChild.classList.add('sel'); selNotes=selNotes.filter(x=>!x.startsWith('尺寸:')); selNotes.splice(1,0,'尺寸:'+sizes[0]); }
+  }
+  // 更新客製化按鈕
+  const customs=getDrinkCustoms(n);
+  const customEl=document.getElementById('customButtons');
+  if(customEl){
+    selNotes=selNotes.filter(x=>!['無糖','去冰','去奶','溫','熱'].includes(x));
+    customEl.innerHTML=customs.map(s=>`<button class="qnote" style="border-color:#2E7D32;color:#2E7D32" onclick="toggleCustom(this,'${s}')">${s}</button>`).join('');
+  }
+}
+function selectSize(btn,s){
+  document.querySelectorAll('#sizeButtons button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selNotes=selNotes.filter(x=>!x.startsWith('尺寸:'));
+  const idx=selNotes.findIndex(x=>x.startsWith('飲料:'));
+  selNotes.splice(idx+1,0,'尺寸:'+s);
+}
+function toggleCustom(btn,s){
+  const TEMP=['溫','熱','冰'];
+  if(TEMP.includes(s)){
+    // 溫/熱互斥
+    document.querySelectorAll('#customButtons button').forEach(b=>{ if(TEMP.includes(b.textContent)) b.classList.remove('sel'); });
+    selNotes=selNotes.filter(x=>!TEMP.includes(x));
+    if(btn.classList.contains('sel')){ btn.classList.remove('sel'); }
+    else { btn.classList.add('sel'); selNotes.push(s); }
+  } else {
+    if(btn.classList.contains('sel')){ btn.classList.remove('sel'); selNotes=selNotes.filter(x=>x!==s); }
+    else { btn.classList.add('sel'); selNotes.push(s); }
+  }
+}
+function closeModal(){document.getElementById('noteOverlay').classList.remove('open');pendingItem=null;}
+function toggleNote(btn,n){
+  if(selNotes.includes(n)){selNotes=selNotes.filter(x=>x!==n);btn.classList.remove('sel');}
+  else{selNotes.push(n);btn.classList.add('sel');}
+}
+function confirmAdd(){
+  if(!pendingItem)return;
+  const custom=document.getElementById('customNote').value.trim();
+  const note=[...selNotes,...(custom?[custom]:[])].join('、');
+  const exist=cart.find(c=>c.name===pendingItem.name&&c.note===note);
+  if(exist)exist.qty++;
+  else cart.push({...pendingItem,qty:1,note,id:Date.now()});
+  closeModal();renderCart();toast('已加入：'+pendingItem.name);
+}
+function setType(t){
+  orderType=t;
+  document.getElementById('btnDine').className='type-btn'+(t==='dine'?' dine-active':'');document.getElementById('tableInp').style.display=t==='dine'?'':'none';document.getElementById('tableLbl').style.display=t==='dine'?'':'none';
+  document.getElementById('btnTake').className='type-btn'+(t==='take'?' take-active':'');
+  document.getElementById('tableLbl').textContent=t==='dine'?'桌號：':'外帶';
+  document.getElementById('tableInp').placeholder=t==='dine'?'輸入桌號':'（不需填寫）';document.getElementById('tableInp').style.display=t==='dine'?'':'none';document.getElementById('tableLbl').style.display=t==='dine'?'':'none';
+}
+function renderCart(){
+  const el=document.getElementById('cartList');
+  if(!cart.length){el.innerHTML='<div class="cart-empty">← 點左側餐點加入</div>';document.getElementById('totalAmt').textContent='$0';document.getElementById('sendBtn').disabled=true;return;}
+  el.innerHTML=cart.map(item=>
+    `<div class="cart-row">
+      <div class="cart-row-top">
+        <span class="cart-row-name">${item.name}</span>
+        <div class="qty-ctrl">
+          <button class="qbtn" onclick="chgQty(${item.id},-1)">−</button>
+          <span class="qnum">${item.qty}</span>
+          <button class="qbtn" onclick="chgQty(${item.id},1)">+</button>
+        </div>
+        <span class="cart-row-price">$${item.price*item.qty}</span>
+        <button class="delbtn" onclick="delItem(${item.id})">✕</button>
+      </div>
+      <input class="note-inp" placeholder="備註" value="${(item.note||'').replace(/"/g,'&quot;')}" oninput="updNote(${item.id},this.value)">
+    </div>`
+  ).join('');
+  document.getElementById('totalAmt').textContent='$'+cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('sendBtn').disabled=false;
+}
+function chgQty(id,d){const item=cart.find(c=>c.id===id);if(item){item.qty=Math.max(1,item.qty+d);renderCart();}}
+function delItem(id){cart=cart.filter(c=>c.id!==id);renderCart();}
+function updNote(id,v){const item=cart.find(c=>c.id===id);if(item)item.note=v;}
+function submitOrder(){
+  const tbl=document.getElementById('tableInp').value.trim();
+  if(!tbl){document.getElementById('tableInp').style.borderColor='red';setTimeout(()=>document.getElementById('tableInp').style.borderColor='',1500);toast('請輸入'+(orderType==='dine'?'桌號':'外帶號'));return;}
+  const order={id:orderSeq++,type:orderType,table:orderType==='take'?'外帶':tbl,items:JSON.parse(JSON.stringify(cart)),
+    time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+    grillDone:false,breadDone:false,counterDone:false,
+    needsGrill:cart.some(i=>i.station==='grill'||i.station==='both'),
+    needsBread:cart.some(i=>i.station==='bread'||i.station==='both'),
+  };
+  localStorage.setItem('bfSeq3',orderSeq);
+  cart=[];document.getElementById('tableInp').value='';
+  renderCart();
+  toast('⏳ 送出中...');
+  fetch(API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'addOrder',order})})
+    .then(()=>{toast('✅ 訂單送出！'+(orderType==='dine'?'桌':'外帶')+tbl);setTimeout(syncOrders,1000);})
+    .catch(()=>toast('❌ 送出失敗，請重試'));
+}
+function isReady(o){return !o.counterDone&&(!o.needsGrill||o.grillDone)&&(!o.needsBread||o.breadDone);}
+function renderReadyOrders(){
+  const ready=orders.filter(isReady);
+  const sec=document.getElementById('readySection');
+  if(!ready.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('readyList').innerHTML=ready.map(o=>
+    `<div class="ready-chip" onclick="confirmDone(${o.id})">${o.type==='dine'?'桌':'外帶'} ${o.table} ✓</div>`
+  ).join('');
+}
+function confirmDone(id){
+  orders=orders.filter(o=>o.id!==id);
+  renderGrill();renderBread();renderReadyOrders();
+  fetch(API+'?action=confirmDone&id='+id,{mode:'no-cors'}).then(()=>setTimeout(syncOrders,1000));
+  toast('🎉 完成！訂單已刪除');
+}
+function renderGrill(){
+  const pending=orders.filter(o=>!o.counterDone&&o.needsGrill&&!o.grillDone);
+  document.getElementById('grillBadge').textContent=pending.length+' 筆';
+  const qEl=document.getElementById('grillQueue'),cEl=document.getElementById('grillOrders');
+  if(!pending.length){cEl.innerHTML='<div class="no-orders"><div class="no-orders-icon">✅</div><div class="no-orders-text" style="color:var(--grill-accent)">沒有待製餐點</div></div>';qEl.innerHTML='';return;}
+  const cur=pending[0],q=pending.slice(1);
+  qEl.innerHTML=q.length?'<span style="color:var(--muted);font-size:12px;font-weight:700;">下一筆：</span>'+q.map(o=>`<div class="queue-chip grill-chip">${o.type==='dine'?'桌':'外帶'} ${o.table}</div>`).join(''):'';
+  cEl.innerHTML=renderCard(cur,'grill');
+}
+function renderBread(){
+  const pending=orders.filter(o=>!o.counterDone&&o.needsBread&&!o.breadDone);
+  document.getElementById('breadBadge').textContent=pending.length+' 筆';
+  const qEl=document.getElementById('breadQueue'),cEl=document.getElementById('breadOrders');
+  if(!pending.length){cEl.innerHTML='<div class="no-orders"><div class="no-orders-icon">✅</div><div class="no-orders-text" style="color:var(--bread-accent)">沒有待製餐點</div></div>';qEl.innerHTML='';return;}
+  const cur=pending[0],q=pending.slice(1);
+  qEl.innerHTML=q.length?'<span style="color:var(--muted);font-size:12px;font-weight:700;">下一筆：</span>'+q.map(o=>`<div class="queue-chip bread-chip">${o.type==='dine'?'桌':'外帶'} ${o.table}</div>`).join(''):'';
+  cEl.innerHTML=renderCard(cur,'bread');
+}
+function renderCard(order,station){
+  const isG=station==='grill';
+  const items=order.items.filter(i=>i.station===station||i.station==='both');
+  return `<div class="big-order-card ${isG?'grill-card':'bread-card'}">
+    <div class="boc-header">
+      <span class="boc-num">${order.type==='dine'?'桌 ':'外帶 '}${order.table}</span>
+      <span class="boc-type ${order.type==='dine'?'badge-dine':'badge-take'}">${order.type==='dine'?'內用':'外帶'}</span>
+      <span class="boc-time">${order.time}</span>
+    </div>
+    <div class="boc-items">${items.map(item=>`<div class="boc-item-row"><span class="boc-qty">x${item.qty}</span><span class="boc-name">${item.name}${item.note?`<span class="boc-note">📌 ${item.note}</span>`:''}</span></div>`).join('')}</div>
+    <div class="boc-footer"><button class="done-btn ${isG?'grill-done':'bread-done'}" onclick="${isG?'markGrill':'markBread'}(${order.id})">✅ 完成這筆</button></div>
+  </div>`;
+}
+function markGrill(id){
+  orders=orders.map(o=>o.id===id?{...o,grillDone:true}:o);
+  renderGrill();renderReadyOrders();
+  fetch(API+'?action=markDone&id='+id+'&station=grill',{mode:'no-cors'}).then(()=>setTimeout(syncOrders,1000));
+  toast('煎台完成！');
+}
+function markBread(id){
+  orders=orders.map(o=>o.id===id?{...o,breadDone:true}:o);
+  renderBread();renderReadyOrders();
+  fetch(API+'?action=markDone&id='+id+'&station=bread',{mode:'no-cors'}).then(()=>setTimeout(syncOrders,1000));
+  toast('麵包/飲料完成！');
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(name+'Page').classList.add('active');btn.classList.add('active');syncOrders();
+}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+init();
+</script>
+</body>
+</html>
